@@ -39,6 +39,9 @@ function fetchPack(transport, onError) {
   };
 
   function onRef(line) {
+    if (line === undefined) {
+      throw new Error("Socket disconnected");
+    }
     if (line === null) {
       api.put(refs);
       api.take(onWant);
