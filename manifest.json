@@ -1,0 +1,28 @@
+{
+  "name": "Pluggy",
+  "short_name": "Pluggy",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "minimum_chrome_version": "31",
+  "description": "Future js-git workflow",
+  "offline_enabled": true,
+  "app": {
+    "background": {
+      "scripts": ["loader.js"]
+    }
+  },
+  "permissions": [
+    "https://github.com/",
+    "https://bitbucket.org/",
+    "https://git.geekli.st/",
+    "https://git.gitorious.org/",
+    "https://gitlab.com/",
+    "storage",
+    "unlimitedStorage",
+    {"fileSystem": ["write", "retainEntries", "directory"]}
+  ],
+  "sockets": {
+    "tcpServer" : {"listen":":*"},
+    "tcp" : {"connect":"*:*"}
+  }
+}

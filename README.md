@@ -1,2 +1,2 @@
-clone-test
-==========
+pluggy
+======
