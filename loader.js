@@ -4,7 +4,7 @@ window.addEventListener("load", function () {
   var modules = {};
   var blobUrls = {};
   var loading = {};
-  var regenerator;
+  // var regenerator;
 
   var initQueue = null;
   function initRegenerator(callback) {
@@ -29,7 +29,7 @@ window.addEventListener("load", function () {
       var exports = {};
       var module = {exports:exports};
       fn(module, exports);
-      regenerator = module.exports;
+      window.regenerator = module.exports;
       if (--left) return;
       done = true;
       callback();
@@ -135,12 +135,16 @@ window.addEventListener("load", function () {
 
       function inject(err) {
         if (err) return callback(err);
-        if (needgen && !window.hasgens && !regenerator) {
+        if (needgen && !window.hasgens && !window.regenerator) {
           return initRegenerator(inject);
         }
         js = "window[" + JSON.stringify(id) + "]" + js + ";\n";
-        if (needgen && regenerator) {
-          js = regenerator(js);
+        if (needgen && window.regenerator) {
+          var index = url.lastIndexOf("/");
+          js = window.regenerator(js, {
+            sourceFileName: url.substring(index + 1),
+            sourceRoot: url.substring(0, index)
+          });
         }
 
         window[id] = define;

@@ -8,7 +8,6 @@ var httpTransport = require('./transport-http')(request);
 var tcpTransport = require('./transport-tcp')(tcp);
 var fetchPackProtocol = require('./git-fetch-pack');
 
-
 // var transport = httpTransport("https://github.com/creationix/tedit-sites.git", "d8198027b52815765064e9863e7f690c5c15f8e6");
 // var transport = httpTransport("https://github.com/creationix/conquest.git")
 // var transport = httpTransport("https://bitbucket.org/creationix/conquest.git", "creationix");
