@@ -139,7 +139,7 @@ window.addEventListener("load", function () {
           return initRegenerator(inject);
         }
         js = "window[" + JSON.stringify(id) + "]" + js + ";\n";
-        if (needgen) {
+        if (needgen && regenerator) {
           js = regenerator(js);
         }
 
