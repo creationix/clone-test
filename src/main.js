@@ -30,7 +30,7 @@ if (url) {
     textarea.value += "Using direct XHR requests for " + url.protocol + " protocol...\n";
   }
   var api = fetchPackProtocol(transport, function (err) {
-    textarea.value += "Network Error:\n" + err.toString + "\n";
+    textarea.value += "Network Error:\n" + err.toString() + "\n";
     throw err;
   });
 
