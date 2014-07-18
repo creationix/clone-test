@@ -19,8 +19,8 @@ function fetchPack(transport, onError) {
   var refs = {};
 
   // Create a duplex channel for talking with the agent.
-  var libraryChannel = makeChannel(0, "library");
-  var agentChannel = makeChannel(0, "agent");
+  var libraryChannel = makeChannel();
+  var agentChannel = makeChannel();
   var api = {
     put: libraryChannel.put,
     drain: libraryChannel.drain,

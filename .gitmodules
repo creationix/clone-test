@@ -6,11 +6,6 @@
 	ref = refs/heads/master
 	prefix = hxrxncmt-55cctq
 	path = modules/bodec.
-[submodule "modules/fastqueue."]
-	url = git@github.com:creationix/fastqueue.git
-	ref = refs/heads/master
-	prefix = hxrxnn17-uerdyh
-	path = modules/fastqueue.
 [submodule "modules/git-sha1."]
 	url = git@github.com:creationix/git-sha1.git
 	ref = refs/heads/master

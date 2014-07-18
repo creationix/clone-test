@@ -17,10 +17,14 @@ var fetchPackProtocol = require('./git-fetch-pack');
 // var transport = httpTransport("https://gitlab.com/creationix/creationix.git");
 var transport = tcpTransport("/creationix/conquest.git", "github.com");
 
+// Start a fetch-pack request over the transport
 var api = fetchPackProtocol(transport);
 
+// Get the refs on the remote
 var refs = yield api.take();
+console.log(refs);
+
+// Tell it we want whatever HEAD points to
 api.put({want: refs.HEAD});
 api.put(null);
 api.put({done: true});
-// console.log(refs);

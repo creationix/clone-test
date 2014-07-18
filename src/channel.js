@@ -1,12 +1,10 @@
 "use strict";
 
-var Queue = require('fastqueue');
-
 module.exports = makeChannel;
 
 function makeChannel(bufferSize, monitor) {
   bufferSize = bufferSize|0;
-  var dataQueue = new Queue();
+  var dataQueue = [];
   var readQueue = [];
   var drainList = [];
 
