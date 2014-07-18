@@ -40,7 +40,7 @@ if (url) {
 
   textarea.value += "Remote refs:\n" + Object.keys(refs).map(function (name) {
     return "  " + refs[name] + " " + name + "\n";
-  }).join();
+  }).join("");
 }
 else {
   // // var transport = httpTransport("https://github.com/creationix/tedit-sites.git", "d8198027b52815765064e9863e7f690c5c15f8e6");
