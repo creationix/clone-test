@@ -29,7 +29,7 @@ function request(method, url, headers, body, callback) {
     callback(null, {
       statusCode: xhr.status,
       headers: resHeaders,
-      body: new Uint8Array(xhr.response)
+      body: xhr.response && new Uint8Array(xhr.response)
     });
   };
   xhr.send(body);
