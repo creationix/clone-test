@@ -1,0 +1,18 @@
+[submodule "modules/js-git"]
+	path = modules/js-git
+	url = git@github.com:creationix/js-git.git
+[submodule "modules/bodec."]
+	url = git@github.com:creationix/bodec.git
+	ref = refs/heads/master
+	prefix = hxrxncmt-55cctq
+	path = modules/bodec.
+[submodule "modules/git-sha1."]
+	url = git@github.com:creationix/git-sha1.git
+	ref = refs/heads/master
+	prefix = hxrxnxbh-1xon9pi
+	path = modules/git-sha1.
+[submodule "tedit-regenerator"]
+	url = git@github.com:creationix/tedit-regenerator.git
+	ref = refs/heads/master
+	prefix = hxrxogwu-12g6u1j
+	path = tedit-regenerator
