@@ -18,13 +18,13 @@
 	ref = refs/heads/master
 	prefix = hxsl9o5r-1lga9ys
 	path = modules/culvert.
-[submodule "modules/pakoz"]
-	url = git@github.com:nodeca/pako.git
-	ref = refs/heads/master
-	prefix = hxslkn33-47ks0d
-	path = modules/pakoz
 [submodule "tedit-regenerator"]
 	url = git@github.com:creationix/tedit-regenerator.git
 	ref = refs/heads/master
 	prefix = hxswl53t-zs1227
 	path = tedit-regenerator
+[submodule "modules/pako."]
+	url = git@github.com:nodeca/pako.git
+	ref = refs/heads/master
+	prefix = hxslkn33-47ks0d
+	path = modules/pako.
