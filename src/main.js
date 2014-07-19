@@ -1,68 +1,112 @@
 "use strict";
 
-var request = require('./request');
-// var tcp = require('./tcp-chrome');
-var tcp = require('./tcp-ws-proxy')("ws://git-browser.creationix.com:8080/");
+var request = require('js-git/net/request-xhr');
+var consume = require('culvert./consume');
 
-var httpTransport = require('./transport-http')(request);
-var tcpTransport = require('./transport-tcp')(tcp);
-var fetchPackProtocol = require('./git-fetch-pack');
+var isApp = window.chrome && window.chrome.sockets;
 
-var defaultsPort = {
+var tcp = isApp ?
+  require('js-git/net/tcp-chrome-sockets') :
+  require('js-git/net/tcp-ws-proxy')("ws://git-browser.creationix.com:8080/");
+
+var httpTransport = require('js-git/net/transport-http')(request);
+var tcpTransport = require('js-git/net/transport-tcp')(tcp);
+var fetchPackProtocol = require('js-git/net/git-fetch-pack');
+
+var defaultPorts = {
   git: 9418,
   http: 80,
   https: 442
 };
 
-var url = getUrl();
-if (url) {
-  var textarea = document.querySelector("textarea");
-  textarea.value += "Connecting to " + url.url + "...\n";
-  var transport;
-  if (url.protocol === "git") {
-    transport = tcpTransport(url.path, url.domain, url.port);
-    textarea.value += "Using websocket proxy for git:// protocol...\n";
+var repo = {};
+require('js-git/mixins/mem-db')(repo);
+require('js-git/mixins/read-combiner')(repo);
+require('js-git/mixins/pack-ops')(repo);
+require('js-git/mixins/walkers')(repo);
+require('js-git/mixins/formats')(repo);
+
+var progress = rewriter();
+
+function write(part) {
+  textarea.value = progress(part);
+}
+
+if (!isApp) {
+  var url = getUrl();
+  if (url) {
+
+    var textarea = document.querySelector("textarea");
+    write("Connecting to " + url.url + "...\n");
+    var transport;
+    if (url.protocol === "git") {
+      transport = tcpTransport(url.path, url.domain, url.port);
+      write("Using websocket proxy for git:// protocol...\n");
+    }
+    else {
+      var portString = url.port === defaultPorts[url.protocol] ? "" : (":" + url.port);
+      var fullUrl = url.protocol + "://" + url.domain + portString + url.path;
+      transport = httpTransport(fullUrl, url.username, url.password);
+      write("Using direct XHR requests for " + url.protocol + " protocol...\n");
+    }
+
+    var api = fetchPackProtocol(transport, function (err) {
+      write("Network Error:\n" + err.toString() + "\n");
+      throw err;
+    });
+
+    var refs = yield* clone(repo, transport, {onProgress: write});
+
+
+
+    // textarea.value += "Remote server capabilities: " + JSON.stringify(refs.caps, null, 2) + "\n";
+
+    // textarea.value += "Remote refs:\n" + Object.keys(refs).map(function (name) {
+    //   return "  " + refs[name] + " " + name + "\n";
+    // }).join("");
   }
-  else {
-    var portString = url.port === defaultsPort[url.protocol] ? "" : (":" + url.port);
-    var fullUrl = url.protocol + "://" + url.domain + portString + url.path;
-    transport = httpTransport(fullUrl, url.username, url.password);
-    textarea.value += "Using direct XHR requests for " + url.protocol + " protocol...\n";
-  }
-  var api = fetchPackProtocol(transport, function (err) {
-    textarea.value += "Network Error:\n" + err.toString() + "\n";
-    throw err;
-  });
-
-  var refs = yield api.take();
-
-  textarea.value += "Remote server capabilities: " + JSON.stringify(refs.caps, null, 2) + "\n";
-
-  textarea.value += "Remote refs:\n" + Object.keys(refs).map(function (name) {
-    return "  " + refs[name] + " " + name + "\n";
-  }).join("");
 }
 else {
-  // // var transport = httpTransport("https://github.com/creationix/tedit-sites.git", "d8198027b52815765064e9863e7f690c5c15f8e6");
-  // // var transport = httpTransport("https://github.com/creationix/conquest.git")
-  // // var transport = httpTransport("https://bitbucket.org/creationix/conquest.git", "creationix");
-  // // var transport = httpTransport("https://git.geekli.st/creationix/conquest.git");
-  // // var transport = httpTransport("https://git.gitorious.org/creationix/conquest.git");
-  // // var transport = httpTransport("https://gitlab.com/creationix/creationix.git");
-  // var transport = tcpTransport("/creationix/conquest.git", "github.com");
+  // var transport = httpTransport("https://github.com/creationix/tedit-sites.git", "d8198027b52815765064e9863e7f690c5c15f8e6");
+  var transport = httpTransport("https://github.com/creationix/conquest.git");
+  // var transport = httpTransport("https://bitbucket.org/creationix/conquest.git", "creationix");
+  // var transport = httpTransport("https://git.geekli.st/creationix/conquest.git");
+  // var transport = httpTransport("https://git.gitorious.org/creationix/conquest.git");
+  // var transport = httpTransport("https://gitlab.com/creationix/creationix.git");
+  var transport = tcpTransport("/creationix/conquest.git", "github.com");
 
-  // // Start a fetch-pack request over the transport
-  // var api = fetchPackProtocol(transport);
 
-  // // Get the refs on the remote
-  // var refs = yield api.take();
-  // console.log(refs);
+  var refs = yield* clone(repo, transport, {onProgress: function (part) {
+    console.log(progress(part));
+  }});
 
-  // // Tell it we want whatever HEAD points to
-  // api.put({want: refs.HEAD});
-  // api.put(null);
-  // api.put({done: true});
+  var log = yield repo.logWalk(refs.HEAD);
+  var item;
+  while (item = yield log.read, item !== undefined) {
+    console.log(item.message);
+  }
 }
+
+function rewriter() {
+  var data = [];
+  var offset = 0;
+  var start = 0;
+  return function (command) {
+    for (var i = 0; i < command.length; i++) {
+      var c = command[i];
+      if (c === "\r") {
+        offset = start;
+        continue;
+      }
+      data[offset++] = c;
+      if (c === "\n") {
+        start = offset;
+      }
+    }
+    return data.join("");
+  };
+}
+
 
 function getUrl() {
   var match = document.location.search.match(/\burl=([^=&]*)/);
@@ -77,7 +121,55 @@ function getUrl() {
     username: match[2],
     password: match[3],
     domain: match[4],
-    port: match[5] || defaultsPort[match[1]],
+    port: match[5] || defaultPorts[match[1]],
     path: match[6]
   };
+}
+
+function* clone(repo, transport, options) {
+  // Start a fetch-pack request over the transport
+  var api = fetchPackProtocol(transport);
+
+  // Get the refs on the remote
+  var refs = yield api.take;
+  if (options.onRefs) {
+    options.onRefs(refs);
+  }
+
+  var wants;
+  if (options.wants) {
+    if (typeof options.wants === "function") {
+      wants = options.wants(refs);
+    }
+    else if (Array.isArray(options.wants)) {
+      wants = options.wants;
+    }
+    else {
+      throw new TypeError("Invalid options.wants type");
+    }
+  }
+  else wants = ["HEAD"];
+
+  wants.forEach(function (want) {
+    api.put({want: refs[want]});
+  });
+  api.put(null);
+  api.put({done: true});
+  api.put();
+
+  var channels = yield api.take;
+
+  if (options.onProgress) {
+    if (typeof options.onProgress !== "function") {
+      throw new TypeError("options.onProgress must be function");
+    }
+    yield [
+      repo.unpack(channels.pack, options),
+      consume(channels.progress, options.onProgress),
+    ];
+  }
+  else {
+    yield repo.unpack(channels.pack, options);
+  }
+  return refs;
 }
