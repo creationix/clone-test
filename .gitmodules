@@ -23,3 +23,8 @@
 	ref = refs/heads/master
 	prefix = hxsl9o5r-1lga9ys
 	path = modules/culvert.
+[submodule "modules/pakoz"]
+	url = git@github.com:nodeca/pako.git
+	ref = refs/heads/master
+	prefix = hxslkn33-47ks0d
+	path = modules/pakoz
