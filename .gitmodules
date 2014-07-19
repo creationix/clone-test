@@ -1,6 +1,3 @@
-[submodule "modules/js-git"]
-	path = modules/js-git
-	url = git@github.com:creationix/js-git.git
 [submodule "modules/bodec."]
 	url = git@github.com:creationix/bodec.git
 	ref = refs/heads/master
@@ -16,3 +13,18 @@
 	ref = refs/heads/master
 	prefix = hxrxogwu-12g6u1j
 	path = tedit-regenerator
+[submodule "modules/js-git"]
+	url = git@github.com:creationix/js-git.git
+	ref = refs/heads/master
+	prefix = hxsl7ud1-xrrknc
+	path = modules/js-git
+[submodule "modules/culvert."]
+	url = git@github.com:creationix/culvert.git
+	ref = refs/heads/master
+	prefix = hxsl9o5r-1lga9ys
+	path = modules/culvert.
+[submodule "modules/pakoz"]
+	url = git@github.com:nodeca/pako.git
+	ref = refs/heads/master
+	prefix = hxslkn33-47ks0d
+	path = modules/pakoz
