@@ -58,7 +58,7 @@ if (!isApp) {
     window.repo = repo;
 
     window.refs = yield* clone(repo, transport, {
-      depth: 1,
+      depth: 10,
       wants: ["refs/heads/master"],
       onProgress: write
     });
