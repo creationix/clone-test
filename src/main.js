@@ -55,9 +55,15 @@ if (!isApp) {
       throw err;
     });
 
-    var refs = yield* clone(repo, transport, {onProgress: write});
+    window.repo = repo;
 
+    window.refs = yield* clone(repo, transport, {
+      depth: 1,
+      wants: ["refs/heads/master"],
+      onProgress: write
+    });
 
+    write("Done!\nOpen your terminal and play with window.repo");
 
     // textarea.value += "Remote server capabilities: " + JSON.stringify(refs.caps, null, 2) + "\n";
 
@@ -148,11 +154,17 @@ function* clone(repo, transport, options) {
       throw new TypeError("Invalid options.wants type");
     }
   }
-  else wants = ["HEAD"];
+  else wants = Object.keys(refs);
 
   wants.forEach(function (want) {
+    // Skip peeled refs
+    if (/\^\{\}$/.test(want)) return;
+    // Ask for the others
     api.put({want: refs[want]});
   });
+  if (options.depth) {
+    api.put({deepen: options.depth});
+  }
   api.put(null);
   api.put({done: true});
   api.put();
@@ -170,6 +182,11 @@ function* clone(repo, transport, options) {
   }
   else {
     yield repo.unpack(channels.pack, options);
+  }
+  for (var i = 0; i < wants.length; i++) {
+    var name = wants[i];
+    if (name === "HEAD" || !refs[name]) continue;
+    yield repo.updateRef(name, refs[name]);
   }
   return refs;
 }

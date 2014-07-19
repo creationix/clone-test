@@ -8,11 +8,6 @@
 	ref = refs/heads/master
 	prefix = hxrxnxbh-1xon9pi
 	path = modules/git-sha1.
-[submodule "tedit-regenerator"]
-	url = git@github.com:creationix/tedit-regenerator.git
-	ref = refs/heads/master
-	prefix = hxrxogwu-12g6u1j
-	path = tedit-regenerator
 [submodule "modules/js-git"]
 	url = git@github.com:creationix/js-git.git
 	ref = refs/heads/master
@@ -28,3 +23,8 @@
 	ref = refs/heads/master
 	prefix = hxslkn33-47ks0d
 	path = modules/pakoz
+[submodule "tedit-regenerator"]
+	url = git@github.com:creationix/tedit-regenerator.git
+	ref = refs/heads/master
+	prefix = hxswl53t-zs1227
+	path = tedit-regenerator
