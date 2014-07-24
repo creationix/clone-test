@@ -16,7 +16,7 @@ var fetchPackProtocol = require('js-git/net/git-fetch-pack');
 var defaultPorts = {
   git: 9418,
   http: 80,
-  https: 442
+  https: 443
 };
 
 var repo = {};
